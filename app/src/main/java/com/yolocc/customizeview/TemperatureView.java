@@ -25,10 +25,10 @@ public class TemperatureView extends View {
 
     private int scaleArcRadius; // 刻度弧的半径
 
-    private int mTikeCount = 40; // 40条刻度(包括长短)
+    private int mTicksCount = 40; // 40条刻度(包括长短)
 
-    private int mLongTikeHeight = dp2px(10); // 长刻度
-    private int mShortTikeHeight = dp2px(5); // 短刻度
+    private int mLongTicksHeight = dp2px(10); // 长刻度
+    private int mShortTicksHeight = dp2px(5); // 短刻度
 
     private int pointRadius = dp2px(17); // 中心圆半径
 
@@ -96,6 +96,7 @@ public class TemperatureView extends View {
         leftPointerPaint.setAntiAlias(true);
         leftPointerPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         leftPointerPaint.setColor(getResources().getColor(R.color.leftPointer));
+//        添加阴影
         leftPointerPaint.setShadowLayer(4, 2, 2, 0x80000000);
 
         rightPointerPaint = new Paint();
@@ -124,7 +125,8 @@ public class TemperatureView extends View {
      * 根据不同的模式,设置控件的大小;
      *
      * @param whSpec
-     * @return
+     *
+     * @return 最后控件的大小
      */
     private int startMeasure(int whSpec) {
         int result;
@@ -163,7 +165,7 @@ public class TemperatureView extends View {
     /**
      * 画外圆
      *
-     * @param canvas
+     * @param canvas 画布
      */
     private void drawOutCircle(Canvas canvas) {
         canvas.drawCircle(0, 0, mSize / 2, outCirclePaint);
@@ -173,7 +175,7 @@ public class TemperatureView extends View {
     /**
      * 画进度弧
      *
-     * @param canvas
+     * @param canvas 画布
      */
     private void drawProgress(Canvas canvas) {
         canvas.save();
@@ -226,7 +228,7 @@ public class TemperatureView extends View {
     /**
      * 画刻度表
      *
-     * @param canvas
+     * @param canvas 画布
      */
     private void drawScaleArc(Canvas canvas) {
         // 刻度弧紧靠进度弧
@@ -236,46 +238,46 @@ public class TemperatureView extends View {
         RectF rectF = new RectF(-scaleArcRadius, -scaleArcRadius, scaleArcRadius, scaleArcRadius);
         canvas.drawArc(rectF, 150, 240, false, scaleArcPaint);
 
-        float mAngle = 240f / mTikeCount;
+        float mAngle = 240f / mTicksCount;
 
         panelTextPaint.setTextSize(sp2px(15));
 
         String scale;
-        for (int i = 0; i <= mTikeCount / 2; i++) {
+        for (int i = 0; i <= mTicksCount / 2; i++) {
             if (i % 5 == 0) {
                 scale = 20 + i + "";
                 float scaleWidth = panelTextPaint.measureText(scale);
-                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mLongTikeHeight, scalePaint);
-                canvas.drawText(scale, -scaleWidth / 2, -scaleArcRadius + mLongTikeHeight + dp2px(15), panelTextPaint);
+                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mLongTicksHeight, scalePaint);
+                canvas.drawText(scale, -scaleWidth / 2, -scaleArcRadius + mLongTicksHeight + dp2px(15), panelTextPaint);
             } else {
-                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mShortTikeHeight, scalePaint);
+                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mShortTicksHeight, scalePaint);
             }
             // 旋转坐标系
             canvas.rotate(mAngle, 0, 0);
         }
 
-        canvas.rotate(-mAngle * mTikeCount / 2 - 6, 0, 0);
-        for (int i = 0; i <= mTikeCount / 2; i++) {
+        canvas.rotate(-mAngle * mTicksCount / 2 - 6, 0, 0);
+        for (int i = 0; i <= mTicksCount / 2; i++) {
             if (i % 5 == 0) {
                 scale = 20 - i + "";
                 float scaleWidth = panelTextPaint.measureText(scale);
-                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mLongTikeHeight, scalePaint);
-                canvas.drawText(scale, -scaleWidth / 2, -scaleArcRadius + mLongTikeHeight + dp2px(15), panelTextPaint);
+                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mLongTicksHeight, scalePaint);
+                canvas.drawText(scale, -scaleWidth / 2, -scaleArcRadius + mLongTicksHeight + dp2px(15), panelTextPaint);
             } else {
-                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mShortTikeHeight, scalePaint);
+                canvas.drawLine(0, -scaleArcRadius, 0, -scaleArcRadius + mShortTicksHeight, scalePaint);
             }
             // 旋转坐标系
             canvas.rotate(-mAngle, 0, 0);
         }
         // 画布回正
-        canvas.rotate(-mAngle * mTikeCount / 2 + 6, 0, 0);
+        canvas.rotate(-mAngle * mTicksCount / 2 + 6, 0, 0);
         canvas.restore();
     }
 
     /**
      * 画中间圆
      *
-     * @param canvas
+     * @param canvas 画布
      */
     private void drawInPoint(Canvas canvas) {
         canvas.save();
@@ -286,7 +288,7 @@ public class TemperatureView extends View {
     /**
      * 画指针
      *
-     * @param canvas
+     * @param canvas 画布
      */
     private void drawPointer(Canvas canvas) {
         RectF rectf = new RectF(-pointRadius / 2, -pointRadius / 2, pointRadius / 2, pointRadius / 2);
@@ -299,14 +301,14 @@ public class TemperatureView extends View {
         Path leftPointerPath = new Path();
         leftPointerPath.moveTo(pointRadius / 2, 0);
         leftPointerPath.addArc(rectf, 0, 360);
-        leftPointerPath.lineTo(0, scaleArcRadius - mLongTikeHeight - dp2px(OFFSET) - dp2px(15));
+        leftPointerPath.lineTo(0, scaleArcRadius - mLongTicksHeight - dp2px(OFFSET) - dp2px(15));
         leftPointerPath.lineTo(-pointRadius / 2, 0);
         leftPointerPath.close();
 
         Path rightPointerPath = new Path();
         rightPointerPath.moveTo(-pointRadius / 2, 0);
         rightPointerPath.addArc(rectf, 0, -180);
-        rightPointerPath.lineTo(0, scaleArcRadius - mLongTikeHeight - dp2px(OFFSET) - dp2px(15));
+        rightPointerPath.lineTo(0, scaleArcRadius - mLongTicksHeight - dp2px(OFFSET) - dp2px(15));
         rightPointerPath.lineTo(0, pointRadius / 2);
         rightPointerPath.close();
 
@@ -332,10 +334,6 @@ public class TemperatureView extends View {
         canvas.restore();
     }
 
-    public float getCurrentTemp() {
-        return currentTemp;
-    }
-
     public void setCurrentTemp(float currentTemp) {
         if (currentTemp < 0) {
             currentTemp = 0;
@@ -349,8 +347,9 @@ public class TemperatureView extends View {
     /**
      * 将 dp 转换为 px
      *
-     * @param dp
-     * @return
+     * @param dp 需转换数
+     *
+     * @return 返回转换结果
      */
     private int dp2px(int dp) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, getResources().getDisplayMetrics());
